@@ -39,6 +39,7 @@ export class User {
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
 
+  @OneToMany(() => Article, (article) => article.favoritedBy)
   favorites: Article[];
 
   comments: Comment[];

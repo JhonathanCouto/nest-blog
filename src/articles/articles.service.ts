@@ -87,6 +87,66 @@ export class ArticlesService {
     return `This action removes a #${id} article`;
   }
 
+  async favorite(userId: number, slug: string): Promise<Article> {
+    const article = await this.articlesRepository.findOne({
+      where: { slug },
+      relations: ['favoritedBy'],
+    });
+
+    const user = await this.usersService.findOne({ id: userId });
+
+    if (!article) {
+      throw new BadRequestException('Article does not exist');
+    }
+
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    const isNewFavorite = user.favorites
+      ? user.favorites.findIndex((_article) => _article.id === article.id) < 0
+      : false;
+
+    if (isNewFavorite) {
+      user.favorites.push(article);
+      article.favoritesCount++;
+      await this.usersService.update(user.id, user);
+      await this.articlesRepository.save(article);
+    }
+
+    return article;
+  }
+
+  async unfavorite(userId: number, slug: string): Promise<Article> {
+    const article = await this.articlesRepository.findOne({
+      where: { slug },
+      relations: ['favoritedBy'],
+    });
+
+    const user = await this.usersService.findOne({ id: userId });
+
+    if (!article) {
+      throw new BadRequestException('Article does not exist');
+    }
+
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    const deleteIndex = user.favorites
+      ? user.favorites.findIndex((_article) => _article.id === article.id)
+      : -1;
+
+    if (deleteIndex >= 0) {
+      user.favorites.splice(deleteIndex, 1);
+      article.favoritesCount--;
+      await this.usersService.update(user.id, user);
+      await this.articlesRepository.save(article);
+    }
+
+    return article;
+  }
+
   private async slugify(title: string): Promise<string> {
     return slug(title, { lower: true });
   }

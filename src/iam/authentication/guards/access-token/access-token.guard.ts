@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import jwtConfig from '../../config/jwt.config';
+import jwtConfig from '../../../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { Request } from 'express';
 import { REQUEST_USER_KEY, TYPE_TOKEN_BEARER } from 'src/iam/iam.constants';

@@ -42,4 +42,10 @@ export class Article {
   @JoinTable()
   @Transform(({ value }) => value.map((tag) => tag.name))
   tags?: Tag[];
+
+  @ManyToOne(() => User, (user) => user.favorites)
+  favoritedBy: User[];
+
+  @Column({ default: 0 })
+  favoritesCount: number;
 }

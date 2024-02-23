@@ -1,17 +1,18 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
-import jwtConfig from './config/jwt.config';
+import jwtConfig from '../config/jwt.config';
+import { ConfigType } from '@nestjs/config';
 import { HashingService } from '../hashing/hashing.service';
-import { User } from 'src/users/entities/user.entity';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseType } from './types/login-response.type';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { User } from 'src/users/entities/user.entity';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
-export class LoginService {
+export class AuthenticationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -40,6 +41,18 @@ export class LoginService {
     } catch (error) {
       throw new UnauthorizedException(error);
     }
+  }
+
+  async me(payload: JwtPayload['sub']): Promise<User> {
+    return this.usersService.findOne({ id: payload });
+  }
+
+  async register(registerUserDto: RegisterUserDto): Promise<User> {
+    registerUserDto.password = await this.hashingService.hash(
+      registerUserDto.password,
+    );
+
+    return this.usersService.create(registerUserDto);
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {

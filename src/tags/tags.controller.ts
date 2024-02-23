@@ -3,8 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagsService } from './tags.service';
-import { AuthGuard } from 'src/iam/login/decorators/auth-guard.decorator';
-import { AuthType } from 'src/iam/login/enums/auth-type.enum';
+import { AuthGuard } from 'src/iam/authentication/decorators/auth-guard.decorator';
+import { AuthType } from 'src/iam/authentication/enums/auth-type.enum';
 import { Tag } from './entities/tag.entity';
 
 @ApiTags('Tags')
