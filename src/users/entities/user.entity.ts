@@ -43,6 +43,4 @@ export class User {
   favorites: Article[];
 
   comments: Comment[];
-
-  favoritesCount: number;
 }
