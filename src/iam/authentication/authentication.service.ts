@@ -10,6 +10,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { User } from 'src/users/entities/user.entity';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -41,6 +42,18 @@ export class AuthenticationService {
     } catch (error) {
       throw new UnauthorizedException(error);
     }
+  }
+
+  async update(payload: JwtPayload['sub'], updateDto: UpdateUserDto) {
+    const currentUser = await this.usersService.findOne({ id: payload });
+
+    if (!currentUser) {
+      throw new UnauthorizedException();
+    }
+
+    await this.usersService.update(payload, updateDto);
+
+    return this.usersService.findOne({ id: payload });
   }
 
   async me(payload: JwtPayload['sub']): Promise<User> {

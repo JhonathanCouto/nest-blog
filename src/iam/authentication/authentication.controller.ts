@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { AuthGuard } from './decorators/auth-guard.decorator';
@@ -17,6 +18,7 @@ import { AuthenticationService } from './authentication.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { ActiveUser } from '../decorators/active-user.decorator';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -52,6 +54,17 @@ export class AuthenticationController {
   async me(@ActiveUser() activeUser: ActiveUserData) {
     console.log(activeUser);
     return this.authenticationService.me(activeUser.sub);
+  }
+
+  @Patch('me')
+  @AuthGuard(AuthType.Bearer)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  update(
+    @ActiveUser() activeUser: ActiveUserData,
+    @Body() userDto: UpdateUserDto,
+  ) {
+    return this.authenticationService.update(activeUser.sub, userDto);
   }
 
   @Post('refresh-token')
